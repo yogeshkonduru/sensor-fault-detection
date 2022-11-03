@@ -49,6 +49,6 @@ class DataValidationConfig:
         
         #the file path for the drift report
         self.drift_report_file_path: str = os.path.join(
-            self.invalid_data_dir,
+            self.data_validation_dir,
             training_pipeline.DATA_VALIDATION_DRIFT_REPORT_DIR,
             training_pipeline.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME)
