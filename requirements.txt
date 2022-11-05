@@ -6,4 +6,6 @@ scipy
 dill
 imblearn
 pandas
+matplotlib
+xgboost
 -e .
