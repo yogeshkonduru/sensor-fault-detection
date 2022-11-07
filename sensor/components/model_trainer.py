@@ -76,5 +76,6 @@ class ModelTrainer:
             test_metric_artifact=classfication_test_metric)
 
             logging.info(f"Model trainer Arifact: {model_trainer_artifact}")
+            return model_trainer_artifact
         except Exception as e:
             raise SensorException(e,sys)
