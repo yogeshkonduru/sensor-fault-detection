@@ -34,7 +34,7 @@ class ModelPusher:
             shutil.copy(src=trained_model_path,dst=saved_model_path)
 
             #prepare artifact
-            ModelPusherArtifact(saved_model_path=saved_model_path,model_file_path=model_file_path)
-            return ModelPusherArtifact
+            model_pusher_artifact= ModelPusherArtifact(saved_model_path=saved_model_path,model_file_path=model_file_path)
+            return model_pusher_artifact
         except Exception as e:
             raise SensorException(e,sys)        
