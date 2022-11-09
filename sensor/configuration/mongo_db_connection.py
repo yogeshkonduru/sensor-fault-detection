@@ -12,8 +12,11 @@ class MongoDBClient:
 
             if MongoDBClient.client is None:
                 mongo_db_url = os.getenv(MONGODB_URL_KEY)
-                #mongo_db_url  = "mongodb://root:root@ac-r8tidn9-shard-00-00.x62ls89.mongodb.net:27017,ac-r8tidn9-shard-00-01.x62ls89.mongodb.net:27017,ac-r8tidn9-shard-00-02.x62ls89.mongodb.net:27017/?ssl=true&replicaSet=atlas-aaf4ii-shard-0&authSource=admin&retryWrites=true&w=majority"
-                MongoDBClient.client = pymongo.MongoClient(mongo_db_url, tlsCAFile=ca)
+                print(mongo_db_url)
+                if "localhost" in mongo_db_url:
+                    MongoDBClient.client = pymongo.MongoClient(mongo_db_url) 
+                else:
+                    MongoDBClient.client = pymongo.MongoClient(mongo_db_url, tlsCAFile=ca)
             self.client = MongoDBClient.client
             self.database = self.client[database_name]
             self.database_name = database_name
