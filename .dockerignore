@@ -4,3 +4,5 @@ venv
 flowcharts
 notebooks
 .git
+upload.csv
+predicted.csv

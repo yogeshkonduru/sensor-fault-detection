@@ -4,19 +4,22 @@ import os,sys
 from sensor.logger import logging
 from sensor.pipeline import training_pipeline
 from sensor.pipeline.training_pipeline import TrainPipeline
-import os
+import pandas as pd
 from sensor.utils.main_utils import read_yaml_file
-from sensor.constant.training_pipeline import SAVED_MODEL_DIR
-from fastapi import FastAPI
+from sensor.constant.training_pipeline import SAVED_MODEL_DIR, PREDICTED_FILE_NAME
+from sensor.constant.training_pipeline import UPLOAD_FILE_NAME
+from fastapi import FastAPI, File, UploadFile
 from sensor.constant.application import APP_HOST, APP_PORT
 from starlette.responses import RedirectResponse
 from uvicorn import run as app_run
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 from sensor.ml.model.estimator import ModelResolver,TargetValueMapping
 from sensor.utils.main_utils import load_object
 from fastapi.middleware.cors import CORSMiddleware
-import os
+import shutil
 
+predict_file_path = os.path.join(os.getcwd(),PREDICTED_FILE_NAME)
+upload_file_path  = os.path.join(os.getcwd(),UPLOAD_FILE_NAME)
 env_file_path=os.path.join(os.getcwd(),"env.yaml")
 
 def set_env_variable(env_file_path):
@@ -54,13 +57,21 @@ async def train_route():
     except Exception as e:
         return Response(f"Error Occurred! {e}")
 
+@app.post("/uploadfile")
+async def predict_data(file: UploadFile = File(...)):
+    try:
+        with open (f'{upload_file_path}', 'wb') as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        return {"file_name": file.filename}
+    except Exception as e:
+        raise Response(f"Error Occured! {e}")
+
 @app.get("/predict")
 async def predict_route():
     try:
-        #get data from user csv file
-        #conver csv file to dataframe
-
-        df=None
+        if not os.path.exists(upload_file_path):
+            return {"error": "Please upload a file to predict"}        
+        df=pd.read_csv(upload_file_path)
         model_resolver = ModelResolver(model_dir=SAVED_MODEL_DIR)
         if not model_resolver.is_model_exists():
             return Response("Model is not available")
@@ -70,8 +81,12 @@ async def predict_route():
         y_pred = model.predict(df)
         df['predicted_column'] = y_pred
         df['predicted_column'].replace(TargetValueMapping().reverse_mapping(),inplace=True)
-        
-        #decide how to return file to user.
+        # if os.path.exists(upload_file_path):
+        #     os.remove(upload_file_path)
+        df.to_csv(predict_file_path)
+        if os.path.exists(predict_file_path):
+            return FileResponse(predict_file_path)
+        return {"error": "File does not exist"}
         
     except Exception as e:
         raise Response(f"Error Occured! {e}")

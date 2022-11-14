@@ -2,6 +2,9 @@ import os
 from sensor.constant.s3_bucket import TRAINING_BUCKET_NAME
 
 SAVED_MODEL_DIR =os.path.join("saved_models")
+PREDICTED_FILE_NAME: str = "predicted.csv"
+UPLOAD_FILE_NAME: str = "upload.csv"
+
 # defining common constant variable for training pipeline
 TARGET_COLUMN = "class"
 PIPELINE_NAME: str = "sensor"
